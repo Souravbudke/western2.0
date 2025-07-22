@@ -2,8 +2,14 @@ import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 import { db } from '@/lib/db'; // Your database connection
 
+// Type assertion for server-side db methods
+const serverDb = db as typeof db & {
+  createUser: (user: { name: string; email: string; role: string; password: string; clerkId: string }) => Promise<{ id: string; name: string; email: string; role: string; clerkId?: string }>;
+  getUserByEmail: (email: string) => Promise<{ id: string; name: string; email: string; role: string; clerkId?: string } | null>;
+};
+
 // Use the environment variable name that Clerk documentation recommends
-const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SIGNING_SECRET || process.env.CLERK_WEBHOOK_SECRET;
+const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
 // This is the webhook handler for Clerk events
 export async function POST(req: Request) {
@@ -31,9 +37,11 @@ export async function POST(req: Request) {
     
     // Check if webhook secret is configured
     if (!CLERK_WEBHOOK_SECRET) {
-      console.error('Error: Missing CLERK_WEBHOOK_SIGNING_SECRET');
+      console.error('Error: Missing CLERK_WEBHOOK_SECRET environment variable');
       return new NextResponse('Error: Missing webhook signing secret', { status: 500 });
     }
+
+    console.log('Webhook secret found, proceeding with verification...');
 
     let evt: any;
     
@@ -75,7 +83,8 @@ export async function POST(req: Request) {
         
         try {
           // Get all users and find one with matching clerkId or email
-          const users = await db.getUsers();
+          const users = await serverDb.getUsers();
+          console.log(`Found ${users.length} users in database`);
           
           // First try to find by Clerk ID
           existingUser = users.find(u => u.clerkId === id);
@@ -84,6 +93,8 @@ export async function POST(req: Request) {
           if (!existingUser) {
             existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
           }
+          
+          console.log(`Existing user found: ${existingUser ? `Yes (${existingUser.email})` : 'No'}`);
         } catch (dbError) {
           console.error('Database error checking for existing user:', dbError);
           // Continue with no existing user
@@ -117,7 +128,7 @@ export async function POST(req: Request) {
             
             console.log(`Updating user ${existingUser.id} with:`, updateData);
             
-            await db.updateUser(existingUser.id, updateData);
+            await serverDb.updateUser(existingUser.id, updateData);
             console.log(`User updated in database: ${email} with clerkId: ${id}`);
           } catch (updateError) {
             console.error(`Failed to update user ${email}:`, updateError);
@@ -135,22 +146,33 @@ export async function POST(req: Request) {
             };
             
             console.log(`Creating user with data:`, userData);
+            console.log(`Database connection status: ${typeof serverDb.createUser === 'function' ? 'Ready' : 'Not Ready'}`);
             
-            const newUser = await db.createUser(userData);
-            console.log(`User created in database: ${email} with clerkId: ${id}`);
-          } catch (error) {
-            console.error(`Failed to create user ${email}:`, error);
+            const newUser = await serverDb.createUser(userData);
+            console.log(`✅ User created successfully in database:`, {
+              id: newUser.id,
+              email: newUser.email,
+              clerkId: newUser.clerkId,
+              role: newUser.role
+            });
+          } catch (error: any) {
+            console.error(`❌ Failed to create user ${email}:`, error);
+            console.error('Error details:', {
+              message: error?.message,
+              stack: error?.stack,
+              name: error?.name
+            });
             // If this was a duplicate key error, try to update the existing user
             if (error && typeof error === 'object' && 'toString' in error) {
               const errorString = error.toString();
               if (errorString.includes('duplicate key')) {
                 try {
                   // Try to find the user by email again (might have been created between checks)
-                  const userByEmail = await db.getUserByEmail(email);
+                  const userByEmail = await serverDb.getUserByEmail(email);
                   
                   if (userByEmail) {
                     console.log(`Found user by email after create error, updating with clerkId: ${id}`);
-                    await db.updateUser(userByEmail.id, { 
+                    await serverDb.updateUser(userByEmail.id, { 
                       clerkId: id,
                       name: `${first_name || ''} ${last_name || ''}`.trim(),
                       role: userRole
@@ -184,7 +206,7 @@ export async function POST(req: Request) {
         const email = evt.data.email_addresses?.[0]?.email_address || '';
         
         // Check if we have users in our database
-        const users = await db.getUsers();
+        const users = await serverDb.getUsers();
         
         // Log the first few users for debugging
         console.log('First few users in database:', users.slice(0, 3).map(u => ({
@@ -206,7 +228,7 @@ export async function POST(req: Request) {
         
         // If not found by Clerk ID and we have an email, try to find by email
         if (!userToDelete && email) {
-          userToDelete = await db.getUserByEmail(email);
+          userToDelete = await serverDb.getUserByEmail(email);
           if (userToDelete) {
             console.log(`Found user by email: ${email}`);
           }
@@ -214,7 +236,7 @@ export async function POST(req: Request) {
         
         // If we found a user to delete, delete them
         if (userToDelete) {
-          await db.deleteUser(userToDelete.id);
+          await serverDb.deleteUser(userToDelete.id);
           console.log(`User deleted from database: ${userToDelete.email || userToDelete.id}`);
         } else {
           console.log(`No matching user found to delete for Clerk ID: ${id}, email: ${email || 'none'}`);
