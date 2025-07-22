@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    /* Light mode monochrome color palette */
+    --background: 0 0% 98%; /* #FAFAFA - Nearly White */
+    --foreground: 0 0% 10%; /* #1A1A1A - Nearly Black */
+    --card: 0 0% 100%; /* #FFFFFF - Pure White */
+    --card-foreground: 0 0% 10%; /* #1A1A1A - Nearly Black */
+    --popover: 0 0% 100%; /* #FFFFFF - Pure White */
+    --popover-foreground: 0 0% 10%; /* #1A1A1A - Nearly Black */
+    
+    /* Main color scheme */
+    --primary: 0 0% 9%; /* #171717 - Very Dark Gray (nearly black) */
+    --primary-foreground: 0 0% 98%; /* #FAFAFA - Nearly White */
+    --secondary: 0 0% 96%; /* #F5F5F5 - Very Light Gray */
+    --secondary-foreground: 0 0% 9%; /* #171717 - Very Dark Gray */
+    
+    /* Accent colors */
+    --muted: 0 0% 92%; /* #EBEBEB - Light Gray */
+    --muted-foreground: 0 0% 40%; /* #666666 - Medium Gray */
+    --accent: 0 0% 94%; /* #F0F0F0 - Light Gray */
+    --accent-foreground: 0 0% 12%; /* #1F1F1F - Dark Gray */
+    
+    /* Call to action */
+    --destructive: 0 0% 20%; /* #333333 - Dark Gray */
+    --destructive-foreground: 0 0% 98%; /* #FAFAFA - Nearly White */
+    
+    /* Other UI elements */
+    --border: 0 0% 88%; /* #E0E0E0 - Light Gray */
+    --input: 0 0% 88%; /* #E0E0E0 - Light Gray */
+    --ring: 0 0% 76%; /* #C2C2C2 - Medium Gray */
+    
+    /* Chart colors - monochrome with different shades */
+    --chart-1: 0 0% 20%; /* #333333 - Dark Gray */
+    --chart-2: 0 0% 35%; /* #595959 - Medium-Dark Gray */
+    --chart-3: 0 0% 50%; /* #808080 - Medium Gray */
+    --chart-4: 0 0% 65%; /* #A6A6A6 - Medium-Light Gray */
+    --chart-5: 0 0% 80%; /* #CCCCCC - Light Gray */
+    
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 100%; /* White sidebar background */
+    --sidebar-foreground: 0 0% 10%; /* Nearly Black text */
+    --sidebar-primary: 0 0% 9%; /* Very Dark Gray (nearly black) */
+    --sidebar-primary-foreground: 0 0% 98%; /* Nearly White */
+    --sidebar-accent: 0 0% 94%; /* Light Gray */
+    --sidebar-accent-foreground: 0 0% 12%; /* Dark Gray */
+    --sidebar-border: 0 0% 88%; /* Light Gray */
+    --sidebar-ring: 0 0% 76%; /* Medium Gray */
+    
+    /* Toast colors - clean monochrome */
+    --toast-background: 0 0% 100%; /* White background for all toasts */
+    --toast-foreground: 0 0% 10%; /* Nearly Black text for toasts */
+    --toast-border: 0 0% 88%; /* Light Gray border for toasts */
+    --toast-destructive-background: 0 0% 20%; /* Dark Gray background for destructive */
+    --toast-destructive-foreground: 0 0% 98%; /* Nearly White text for destructive */
+    --toast-destructive-border: 0 0% 15%; /* Darker Gray border for destructive */
+  }
+  .dark {
+    /* True monochrome dark mode color palette */
+    --background: 0 0% 4%; /* #0A0A0A - Nearly Black */
+    --foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    --card: 0 0% 6%; /* #0F0F0F - Very Dark Gray */
+    --card-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    --popover: 0 0% 6%; /* #0F0F0F - Very Dark Gray */
+    --popover-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    
+    /* Main color scheme */
+    --primary: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    --primary-foreground: 0 0% 5%; /* #0D0D0D - Nearly Black */
+    --secondary: 0 0% 12%; /* #1F1F1F - Dark Gray */
+    --secondary-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    
+    /* Accent colors */
+    --muted: 0 0% 12%; /* #1F1F1F - Dark Gray */
+    --muted-foreground: 0 0% 65%; /* #A6A6A6 - Medium-Light Gray */
+    --accent: 0 0% 14%; /* #242424 - Dark Gray */
+    --accent-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    
+    /* Call to action */
+    --destructive: 0 0% 80%; /* #CCCCCC - Light Gray */
+    --destructive-foreground: 0 0% 5%; /* #0D0D0D - Nearly Black */
+    
+    /* Other UI elements */
+    --border: 0 0% 15%; /* #262626 - Dark Gray */
+    --input: 0 0% 15%; /* #262626 - Dark Gray */
+    --ring: 0 0% 70%; /* #B3B3B3 - Light Gray */
+    
+    /* Chart colors - monochrome with different shades for dark mode */
+    --chart-1: 0 0% 90%; /* #E6E6E6 - Very Light Gray */
+    --chart-2: 0 0% 75%; /* #BFBFBF - Light Gray */
+    --chart-3: 0 0% 60%; /* #999999 - Medium Gray */
+    --chart-4: 0 0% 45%; /* #737373 - Medium-Dark Gray */
+    --chart-5: 0 0% 30%; /* #4D4D4D - Dark Gray */
+    
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 5%; /* Nearly Black sidebar */
+    --sidebar-foreground: 0 0% 92%; /* Very Light Gray text */
+    --sidebar-primary: 0 0% 92%; /* Very Light Gray */
+    --sidebar-primary-foreground: 0 0% 5%; /* Nearly Black */
+    --sidebar-accent: 0 0% 14%; /* Dark Gray */
+    --sidebar-accent-foreground: 0 0% 85%; /* Light Gray */
+    --sidebar-border: 0 0% 15%; /* Dark Gray border */
+    --sidebar-ring: 0 0% 70%; /* Light Gray ring */
+    
+    /* Toast colors - consistent monochrome in dark mode too */
+    --toast-background: 0 0% 10%; /* Dark background for all toasts */
+    --toast-foreground: 0 0% 96%; /* Nearly White text for toasts */
+    --toast-border: 0 0% 15%; /* Dark Gray border for toasts */
+    --toast-destructive-foreground: 0 0% 96%; /* Nearly White text for destructive toasts */
+    --toast-destructive-border: 0 0% 75%; /* Light Gray border for destructive toasts */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Ensure the store homepage uses the background color */
+.store-homepage {
+  background-color: hsl(var(--background));
+}
+
+/* Override toast styling for monochrome theme */
+[role="status"][data-sonner-toast],
+[role="alert"][data-sonner-toast],
+[data-sonner-toast] {
+  background-color: white !important;
+  color: #1A1A1A !important;
+  border-color: #E0E0E0 !important;
+}
+
+.dark [role="status"][data-sonner-toast],
+.dark [role="alert"][data-sonner-toast],
+.dark [data-sonner-toast] {
+  background-color: #0F0F0F !important;
+  color: #F5F5F5 !important;
+  border-color: #262626 !important;
+}
+
+[data-sonner-toast][data-type="error"],
+[data-sonner-toast][data-variant="destructive"] {
+  background-color: #333333 !important;
+  color: #FAFAFA !important;
+  border-color: #1A1A1A !important;
+}
+
+.dark [data-sonner-toast][data-type="error"],
+.dark [data-sonner-toast][data-variant="destructive"] {
+  background-color: #1A1A1A !important;
+  color: #FAFAFA !important;
+  border-color: #666666 !important;
+}
+
+/* Monochrome theme button styles */
+.mono-primary-button {
+  background-color: #171717 !important;
+  color: #FAFAFA !important;
+  transition: background-color 0.2s ease;
+}
+
+.mono-primary-button:hover {
+  background-color: #333333 !important;
+}
+
+.dark .mono-primary-button {
+  background-color: #F5F5F5 !important;
+  color: #0D0D0D !important;
+}
+
+.dark .mono-primary-button:hover {
+  background-color: #D9D9D9 !important;
+}
+
+.mono-secondary-button {
+  background-color: #F0F0F0 !important;
+  color: #1A1A1A !important;
+  transition: background-color 0.2s ease;
+}
+
+.mono-secondary-button:hover {
+  background-color: #E0E0E0 !important;
+}
+
+.dark .mono-secondary-button {
+  background-color: #1F1F1F !important;
+  color: #F5F5F5 !important;
+}
+
+.dark .mono-secondary-button:hover {
+  background-color: #2A2A2A !important;
+}

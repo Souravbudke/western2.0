@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    /* Light mode color palette with red background */
+    --background: 0 100% 90%; /* Red background */
+    --foreground: 270 30% 25%; /* Dark text for contrast */
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 270 30% 25%; /* Dark text for contrast */
+    --popover: 0 0% 100%; /* White popovers */
+    --popover-foreground: 270 30% 25%; /* Dark text for contrast */
+    --primary: 0 0% 9%; /* Original primary color */
+    --primary-foreground: 0 0% 98%; /* Original primary foreground */
+    --secondary: 0 0% 96.1%; /* Original secondary color */
+    --secondary-foreground: 0 0% 9%; /* Original secondary foreground */
+    --muted: 0 0% 96.1%; /* Original muted color */
+    --muted-foreground: 0 0% 45.1%; /* Original muted foreground */
+    --accent: 0 0% 96.1%; /* Original accent color */
+    --accent-foreground: 0 0% 9%; /* Original accent foreground */
+    --destructive: 0 84.2% 60.2%; /* Original destructive color */
+    --destructive-foreground: 0 0% 98%; /* Original destructive foreground */
+    --border: 0 0% 89.8%; /* Original border color */
+    --input: 0 0% 89.8%; /* Original input color */
+    --ring: 0 0% 3.9%; /* Original ring color */
+    
+    /* Chart colors */
+    --chart-1: 12 76% 61%; /* Original chart color */
+    --chart-2: 173 58% 39%; /* Original chart color */
+    --chart-3: 197 37% 24%; /* Original chart color */
+    --chart-4: 43 74% 66%; /* Original chart color */
+    --chart-5: 27 87% 67%; /* Original chart color */
+    
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%; /* Original sidebar background - white */
+    --sidebar-foreground: 240 5.3% 26.1%; /* Original sidebar foreground */
+    --sidebar-primary: 240 5.9% 10%; /* Original sidebar primary */
+    --sidebar-primary-foreground: 0 0% 98%; /* Original sidebar primary foreground */
+    --sidebar-accent: 0 100% 95%; /* Light red for hover effect */
+    --sidebar-accent-foreground: 0 80% 50%; /* Darker red for text on hover */
+    --sidebar-border: 220 13% 91%; /* Original sidebar border */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* Original sidebar ring */
+    
+    /* Toast colors - fixed to ensure consistent appearance */
+    --toast-background: 0 0% 100%; /* White background for all toasts */
+    --toast-foreground: 0 0% 20%; /* Dark text for toasts */
+    --toast-border: 0 0% 92%; /* Light border for toasts */
+    --toast-destructive-background: 0 84.2% 60.2%; /* Red background for destructive toasts */
+    --toast-destructive-foreground: 0 0% 98%; /* White text for destructive toasts */
+    --toast-destructive-border: 0 84.2% 55%; /* Darker red border for destructive toasts */
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 70% 20%; /* Dark red for hover effect in dark mode */
+    --sidebar-accent-foreground: 0 80% 70%; /* Light red for text on hover in dark mode */
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Toast colors - fixed to ensure consistent appearance even in dark mode */
+    --toast-background: 0 0% 100%; /* White background for all toasts */
+    --toast-foreground: 0 0% 20%; /* Dark text for toasts */
+    --toast-border: 0 0% 85%; /* Light border for toasts */
+    --toast-destructive-background: 0 84.2% 60.2%; /* Red background for destructive toasts */
+    --toast-destructive-foreground: 0 0% 98%; /* White text for destructive toasts */
+    --toast-destructive-border: 0 84.2% 55%; /* Darker red border for destructive toasts */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Ensure the store homepage uses the red background */
+.store-homepage {
+  background-color: hsl(var(--background));
+}
+
+/* Override toast styling to ensure it's always white with proper contrast */
+[role="status"][data-sonner-toast],
+[role="alert"][data-sonner-toast],
+[data-sonner-toast] {
+  background-color: white !important;
+  color: #333 !important;
+  border-color: #e5e5e5 !important;
+}
+
+[data-sonner-toast][data-type="error"],
+[data-sonner-toast][data-variant="destructive"] {
+  background-color: #ef4444 !important;
+  color: white !important;
+  border-color: #dc2626 !important;
+}
