@@ -530,8 +530,8 @@ function PaymentPageContent() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
-              <div><strong>userid:</strong> mahima@personal.example.com </div>
-              <div><strong>pass:</strong> mahima27 </div>
+              <div><strong>userid:</strong> souravbudke@personal.example.com </div>
+              <div><strong>pass:</strong> souravbudke </div>
             </div>
             <TooltipProvider>
               <Tooltip>
@@ -542,7 +542,7 @@ function PaymentPageContent() {
                     aria-label="Copy credentials"
                     className="ml-4 cursor-pointer p-1 rounded hover:bg-accent focus:bg-accent transition-colors"
                     onClick={async () => {
-                      const credentials = `userid: mahima@personal.example.com\npass: mahima27`;
+                      const credentials = `userid: souravbudke@personal.example.com \npass: souravbudke`;
                       let copied = false;
                       if (navigator.clipboard && window.isSecureContext) {
                         try {

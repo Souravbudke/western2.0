@@ -2,7 +2,7 @@
   "name": "westernstreet",
   "version": "0.1.0",
   "private": true,
-  "author": "Mahima Hovale",
+  "author": "Sourav Budke",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

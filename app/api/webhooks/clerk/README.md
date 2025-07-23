@@ -20,9 +20,11 @@ https://your-domain.com/api/webhooks/clerk
 ```
 
 4. Subscribe to these events:
-   - `user.created`
-   - `user.updated`
+   - `user.created` ⭐ **IMPORTANT: This is the main event for new user creation**
+   - `user.updated` 
    - `user.deleted`
+   
+   **NOTE**: Do NOT subscribe to `email.created` events as these are just email verification events, not user creation events.
 
 ## Vercel Deployment Troubleshooting
 
@@ -75,6 +77,37 @@ This handler processes the following events:
 - When users are deleted in Clerk, they are removed from your database
 
 ## Troubleshooting
+
+### Common Issues
+
+1. **Receiving `email.created` but no users in database**:
+   - Check your Clerk webhook subscription settings
+   - Ensure you're subscribed to `user.created` not just `email.created`
+   - `email.created` events don't create users - they're just email verification events
+
+2. **Environment Variable Mismatch**:
+   - Use `CLERK_WEBHOOK_SECRET` in your `.env` file
+   - The code also supports `CLERK_WEBHOOK_SIGNING_SECRET` as fallback
+
+3. **Users not being created**:
+   - Check Vercel function logs for database connection errors
+   - Verify MongoDB connection string is correct
+   - Ensure the `User` model is properly defined
+
+### Debugging Steps
+
+1. Check your Clerk Dashboard webhook configuration:
+   - Go to Clerk Dashboard > Webhooks
+   - Verify you're subscribed to `user.created`, `user.updated`, and `user.deleted`
+   - Remove `email.created` subscription if present
+
+2. Test with a new user registration:
+   - Create a completely new account (not just sign in with existing account)
+   - Check Vercel logs for `user.created` events
+
+3. Monitor webhook events:
+   - Check both Clerk Dashboard webhook logs and Vercel function logs
+   - Look for database connection errors or user creation failures
 
 Check the server logs for any webhook processing errors. Common issues include:
 - Missing webhook secret

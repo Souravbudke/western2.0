@@ -19,8 +19,7 @@ export default function AboutPage() {
           <div>
             <h2 className="text-2xl font-semibold mb-4 text-red-600">My Story</h2>
             <p className="text-muted-foreground mb-4">
-              WesternStreet is an e-commerce project I developed during my internship at Ultimez Technology Pvt Ltd. This project was created to showcase my web development skills and understanding of modern e-commerce platforms.
-            </p>
+            WesternStreet is an e-commerce project I developed while practicing web development. This project was created to showcase my web development skills and understanding of modern e-commerce platforms.            </p>
             <p className="text-muted-foreground mb-4">
               As a developer, I built this platform to demonstrate the implementation of features like product browsing, shopping cart functionality, user authentication, and a responsive design that works across all devices.
             </p>
@@ -31,9 +30,9 @@ export default function AboutPage() {
           <div className="bg-red-50 dark:bg-red-950/20 p-6 rounded-lg shadow-sm border border-red-100 dark:border-red-800">
             <h3 className="text-xl font-medium mb-4 text-red-600">Project Overview</h3>
             <p className="text-muted-foreground mb-4">
-              This e-commerce platform was developed as part of my internship requirements at Ultimez Technology Pvt Ltd, demonstrating my ability to create a functional online store.
+              WesternStreet is an e-commerce project I developed while practicing web development. This project was created to showcase my web development skills and understanding of modern e-commerce platforms.
             </p>
-            
+
             <h3 className="text-xl font-medium mb-4 text-red-600 mt-6">Technical Features</h3>
             <ul className="space-y-2 text-muted-foreground">
               <li className="flex items-start">
@@ -91,14 +90,14 @@ export default function AboutPage() {
           <div className="flex flex-col md:flex-row gap-8 items-center">
             <div className="relative w-48 h-48 rounded-full overflow-hidden flex-shrink-0 border-4 border-red-200 shadow-md mx-auto md:mx-0">
               <Image 
-                src="/images/about/founder.jpg" 
+                src="/images/about/founder.jpeg" 
                 alt="Developer" 
                 fill 
                 className="object-cover"
               />
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2 text-center md:text-left">Mahima Hovale</h3>
+              <h3 className="text-xl font-medium mb-2 text-center md:text-left">Sourav Budke</h3>
               <p className="text-muted-foreground mb-4">
                 With a passion for sneakers and technology, I created WesternStreet to provide a better online shopping experience for sneakers enthusiasts. My background in computer science and love for cosmetics inspired me to build this platform from the ground up.
               </p>
@@ -108,7 +107,7 @@ export default function AboutPage() {
               
               <div className="flex items-center space-x-4 mt-6 justify-center md:justify-start">
                 <a 
-                  href="https://github.com/mahimahovale/" 
+                  href="https://github.com/souravbudke/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center text-muted-foreground hover:text-red-600 transition-colors duration-200"
@@ -119,7 +118,7 @@ export default function AboutPage() {
                   <span>GitHub</span>
                 </a>
                 <a 
-                  href="https://www.linkedin.com/in/mahimahovale" 
+                  href="https://www.linkedin.com/in/souravbudke" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center text-muted-foreground hover:text-red-600 transition-colors duration-200"

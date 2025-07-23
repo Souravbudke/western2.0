@@ -9,7 +9,7 @@ const serverDb = db as typeof db & {
 };
 
 // Use the environment variable name that Clerk documentation recommends
-const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET || process.env.CLERK_WEBHOOK_SIGNING_SECRET;
 
 // This is the webhook handler for Clerk events
 export async function POST(req: Request) {
@@ -61,6 +61,18 @@ export async function POST(req: Request) {
     // Handle the webhook event
     const eventType = evt.type;
     console.log(`Webhook received: ${eventType}`);
+    console.log('Event data:', JSON.stringify(evt.data, null, 2));
+    
+    // Handle email.created events (these are different from user.created)
+    if (eventType === 'email.created') {
+      console.log('📧 Email created event received - this is just an email verification, not a user creation');
+      console.log('Email data:', evt.data);
+      
+      // For email.created events, we typically don't need to create a user
+      // These events are triggered when an email is added to a user account
+      // The actual user creation happens with user.created events
+      return new NextResponse('Email event acknowledged - no user action needed', { status: 200 });
+    }
     
     // Process user events with appropriate error handling
     if (eventType === 'user.created' || eventType === 'user.updated') {
@@ -83,8 +95,9 @@ export async function POST(req: Request) {
         
         try {
           // Get all users and find one with matching clerkId or email
+          console.log('🔍 Attempting to fetch users from database...');
           const users = await serverDb.getUsers();
-          console.log(`Found ${users.length} users in database`);
+          console.log(`✅ Successfully fetched ${users.length} users from database`);
           
           // First try to find by Clerk ID
           existingUser = users.find(u => u.clerkId === id);
@@ -96,7 +109,11 @@ export async function POST(req: Request) {
           
           console.log(`Existing user found: ${existingUser ? `Yes (${existingUser.email})` : 'No'}`);
         } catch (dbError) {
-          console.error('Database error checking for existing user:', dbError);
+          console.error('❌ Database error checking for existing user:', dbError);
+          console.error('Database error details:', {
+            message: dbError instanceof Error ? dbError.message : 'Unknown error',
+            stack: dbError instanceof Error ? dbError.stack : 'No stack trace'
+          });
           // Continue with no existing user
         }
         
@@ -145,8 +162,11 @@ export async function POST(req: Request) {
               clerkId: id // Make sure clerkId is set
             };
             
-            console.log(`Creating user with data:`, userData);
+            console.log(`🚀 Creating user with data:`, userData);
             console.log(`Database connection status: ${typeof serverDb.createUser === 'function' ? 'Ready' : 'Not Ready'}`);
+            
+            // Test database connection before creating user
+            console.log('🔄 Testing database connection...');
             
             const newUser = await serverDb.createUser(userData);
             console.log(`✅ User created successfully in database:`, {
@@ -160,13 +180,25 @@ export async function POST(req: Request) {
             console.error('Error details:', {
               message: error?.message,
               stack: error?.stack,
-              name: error?.name
+              name: error?.name,
+              code: error?.code // MongoDB error codes
             });
+            
+            // More specific error handling
+            if (error?.code === 11000) {
+              console.log('🔄 Duplicate key error detected - user already exists');
+            } else if (error?.message?.includes('E11000')) {
+              console.log('🔄 E11000 error - duplicate email detected');
+            } else if (error?.message?.includes('connect')) {
+              console.log('🔌 Database connection error detected');
+            }
+            
             // If this was a duplicate key error, try to update the existing user
             if (error && typeof error === 'object' && 'toString' in error) {
               const errorString = error.toString();
-              if (errorString.includes('duplicate key')) {
+              if (errorString.includes('duplicate key') || errorString.includes('E11000')) {
                 try {
+                  console.log('🔄 Attempting to update existing user due to duplicate key error...');
                   // Try to find the user by email again (might have been created between checks)
                   const userByEmail = await serverDb.getUserByEmail(email);
                   
@@ -177,10 +209,10 @@ export async function POST(req: Request) {
                       name: `${first_name || ''} ${last_name || ''}`.trim(),
                       role: userRole
                     });
-                    console.log(`User updated with clerkId after duplicate error: ${email}`);
+                    console.log(`✅ User updated with clerkId after duplicate error: ${email}`);
                   }
                 } catch (retryError) {
-                  console.error(`Failed in retry update after duplicate key error:`, retryError);
+                  console.error(`❌ Failed in retry update after duplicate key error:`, retryError);
                 }
               }
             }
@@ -257,8 +289,57 @@ export async function POST(req: Request) {
       }
     }
 
-    // For any other event type, acknowledge receipt
-    return new NextResponse('Webhook processed successfully', { status: 200 });
+    // For any other event type, acknowledge receipt but log what we received
+    console.log(`📝 Unhandled event type: ${eventType}`);
+    console.log('Available event data keys:', Object.keys(evt.data || {}));
+    
+    // Handle session events specifically
+    if (['session.created', 'session.ended', 'session.removed', 'session.revoked'].includes(eventType)) {
+      console.log('🔐 Session-related event received - no database action needed');
+      console.log('⚠️  NOTE: Session events do NOT create users in the database.');
+      console.log('📋 To store users in your database, you need to subscribe to user.created events in your Clerk Dashboard.');
+      console.log('🔧 Go to Clerk Dashboard > Webhooks > Your Endpoint > Edit > Subscribe to "user.created" event');
+      
+      // For session.created, we can try to get user info and store if needed (WORKAROUND)
+      if (eventType === 'session.created' && evt.data?.user_id) {
+        console.log('👤 Session created for user ID:', evt.data.user_id);
+        console.log('� WORKAROUND: Attempting to handle user creation from session data...');
+        
+        // Try to extract user information from session data
+        const userId = evt.data.user_id;
+        
+        try {
+          // Check if we already have this user in our database
+          const users = await serverDb.getUsers();
+          const existingUser = users.find(u => u.clerkId === userId);
+          
+          if (existingUser) {
+            console.log(`✅ User already exists in database: ${existingUser.email}`);
+          } else {
+            console.log('❌ User not found in database. Session events do not contain user details.');
+            console.log('🔧 SOLUTION: Change your Clerk webhook to subscribe to user.created events instead.');
+            console.log('📍 Current session data available:', Object.keys(evt.data));
+            
+            // Log what data is available in session.created
+            if (evt.data) {
+              console.log('Session event data:', JSON.stringify(evt.data, null, 2));
+            }
+          }
+        } catch (dbError) {
+          console.error('❌ Database error during session handling:', dbError);
+        }
+      }
+      
+      return new NextResponse('Session event acknowledged - no user creation needed', { status: 200 });
+    } else if (['organization.created', 'organization.updated', 'organization.deleted'].includes(eventType)) {
+      console.log('🏢 Organization-related event - could potentially handle admin roles here');
+      return new NextResponse('Organization event acknowledged', { status: 200 });
+    } else {
+      console.log('❓ Unknown event type - consider adding handler if this is important for your app');
+      console.log('📚 Common Clerk events that create users: user.created, user.updated, user.deleted');
+      console.log('🔧 Current webhook is receiving:', eventType);
+      return new NextResponse('Unknown event acknowledged', { status: 200 });
+    }
   } catch (error) {
     console.error('Unexpected error in webhook handler:', error);
     // Return 200 to prevent retries for general errors
